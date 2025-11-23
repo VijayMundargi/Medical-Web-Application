@@ -1,0 +1,60 @@
+
+PHASE-WISE ROADMAP FOR MEDICAL STORE WEB APPLICATION
+
+PHASE 1 – Planning & Documentation (v0.1.x)
+- Create project structure: backend/, frontend/, docs/
+- Create documentation files: requirements.md, architecture.md, database-schema.md, api-spec.md, frontend-structure.md, changelog.md
+- Initialize Git & GitHub
+- Tag version: v0.1.0 
+
+Status : Complted
+
+--------------------------------------------------------------------------
+PHASE 2 – Core Backend + Docker MySQL (v0.2.x)
+- Setup MySQL in Docker with docker-compose
+- Configure Spring Boot to connect to Docker MySQL
+- Create Medicine, Customer entities + repositories
+- Create MedicineService + Controller
+- Implement search API with rack/shelf/stack fields
+- Update docs
+- Tag version: v0.2.0
+
+PHASE 3 – Core Frontend (Medicine Search + Location) (v0.3.x)
+- Setup React project and router
+- Implement medicineApi.js
+- Create MedicineSearchPage.jsx with location display
+- Connect backend search API
+- Update docs
+- Tag version: v0.3.0
+
+PHASE 4 – Orders & Billing Module (v0.4.x)
+- Create Order & OrderItem entities
+- Implement OrderService: create order, bill calc, stock deduction
+- Implement OrderController APIs
+- Create Order page in React
+- Update docs
+- Tag version: v0.4.0
+
+PHASE 5 – Authentication + Role-Based Access (v0.5.x)
+- Create User entity
+- Implement JWT: JwtUtil, JwtFilter, SecurityConfig
+- Add login & role-based routes
+- Create login page in React + AuthContext
+- Protect routes by role
+- Update docs
+- Tag version: v0.5.0
+
+PHASE 6 – Reports + Returns (v0.6.x)
+- Create report APIs (sales, stock, low-stock)
+- Implement order return system
+- Create Reports page in React
+- Update documentation
+- Tag version: v0.6.0
+
+PHASE 7 – Cloud Deployment (v1.0.0)
+- Deploy backend on Render/Railway
+- Host DB on cloud (Railway/PlanetScale)
+- Deploy frontend on Vercel/Netlify
+- Configure env variables (DB URL, JWT secret)
+- Update deployment.md + README
+- Tag version: v1.0.0

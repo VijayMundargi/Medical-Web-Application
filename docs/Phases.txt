@@ -1,0 +1,412 @@
+Phases & Versions
+
+
+| Phase   | Goal                                                       | Version Range |
+| ------- | ---------------------------------------------------------- | ------------- |
+| Phase 1 | Planning & Documentation                                   | v0.1.x        |
+| Phase 2 | Core Backend + DB + Docker MySQL                           | v0.2.x        |
+| Phase 3 | Core Frontend UI (Customers + Medicines Search + Location) | v0.3.x        |
+| Phase 4 | Orders & Billing                                           | v0.4.x        |
+| Phase 5 | Auth + Roles (Admin/Staff)                                 | v0.5.x        |
+| Phase 6 | Reports + Polish                                           | v0.6.x        |
+| Phase 7 | Cloud Deployment (Full Cloud-based App)                    | v1.0.0        |
+
+
+🟦 Phase 1 – Planning & Documentation
+
+Goal: Have the project clearly defined on paper + GitHub.
+
+Target versions: v0.1.0, v0.1.1
+
+🎯 What you should complete
+
+Create project structure
+
+backend/
+
+frontend/
+
+docs/
+
+README.md
+
+Create documentation files
+
+docs/requirements.md
+
+docs/architecture.md
+
+docs/database-schema.md
+
+docs/api-spec.md
+
+docs/frontend-structure.md
+
+docs/changelog.md
+
+Initialize Git + GitHub
+
+git init
+
+First commit: "chore: initial project structure"
+
+Push to GitHub
+
+Add repo description
+
+✅ Version tag
+
+After basic docs & structure are ready:
+
+git tag v0.1.0 -m "v0.1.0 - Project planning and documentation"
+git push origin v0.1.0
+
+🟩 Phase 2 – Core Backend + DB + Docker MySQL
+
+Goal: Backend skeleton with MySQL in Docker & basic entities.
+
+Target versions: v0.2.0, v0.2.1
+
+🎯 What to complete
+1. MySQL in Docker
+
+Add docker-compose.yml with MySQL
+
+Run docker-compose up -d
+
+Confirm DB is running
+
+2. Spring Boot Setup
+
+Create Spring Boot project with:
+
+Web
+
+JPA
+
+MySQL driver
+
+Configure application.properties to use Docker DB
+
+3. Core Entities & Repositories
+
+Medicine entity (with rack, shelf, stack fields)
+
+Customer entity
+
+Repositories for both
+
+4. Basic Services + Controller for Medicines
+
+MedicineService
+
+MedicineController
+
+/api/medicines GET + POST
+
+Search by keyword
+
+5. Update docs
+
+Update architecture.md to mention Docker DB
+
+Update database-schema.md for tables
+
+Update changelog.md
+
+✅ Version tags
+
+After basic backend + DB working:
+
+git tag v0.2.0 -m "v0.2.0 - Core backend with Docker MySQL and medicine module"
+git push origin v0.2.0
+
+
+If you later refine APIs / DTOs, tag as:
+
+git tag v0.2.1
+git push origin v0.2.1
+
+🟧 Phase 3 – Core Frontend (Customers + Medicine Search + Location)
+
+Goal: UI pages working with backend APIs.
+
+Target versions: v0.3.0, v0.3.1
+
+🎯 What to complete
+1. React project setup
+
+Create React app in frontend/
+
+Install:
+
+react-router-dom
+
+axios
+
+2. API service layer
+
+src/services/medicineApi.js
+
+searchMedicines(searchTerm)
+
+src/services/customerApi.js (later)
+
+3. Medicine Search Page
+
+MedicineSearchPage.jsx
+
+Input search field
+
+Table of results
+
+Show:
+
+Name
+
+Stock
+
+MRP
+
+Rack
+
+Shelf
+
+Stack
+
+Highlight location in a side card (📦 Location)
+
+4. Basic routing
+
+/medicines → MedicineSearchPage
+
+Add a simple navbar or sidebar later
+
+5. Docs
+
+Update frontend-structure.md with routes & pages
+
+Update api-spec.md for medicine APIs
+
+Update changelog.md for v0.3.x
+
+✅ Version tags
+
+When medicine UI + search works end-to-end:
+
+git tag v0.3.0 -m "v0.3.0 - React medicine search with location display"
+git push origin v0.3.0
+
+🟨 Phase 4 – Orders & Billing
+
+Goal: Full sales flow: create order, add medicines, calculate bill.
+
+Target versions: v0.4.0, v0.4.1
+
+🎯 What to complete
+Backend
+
+Entities:
+
+Order
+
+OrderItem
+
+OrderService:
+
+Create order
+
+Calculate total
+
+Reduce stock
+
+OrderController:
+
+POST /api/orders
+
+GET /api/orders/{id}
+
+GET /api/orders?customerId=..
+
+Frontend
+
+/orders/new page
+
+Select customer
+
+Search & add medicines to cart
+
+Show total, tax
+
+Confirm order
+
+/orders/history page (simple list)
+
+Docs
+
+api-spec.md: add order APIs
+
+database-schema.md: add order tables
+
+changelog.md: add v0.4.x
+
+✅ Version tags
+git tag v0.4.0 -m "v0.4.0 - Order and billing module"
+git push origin v0.4.0
+
+🟥 Phase 5 – Authentication + Role-Based Access (Admin / Staff)
+
+Goal: JWT-based login, secure APIs, and different access for roles.
+
+Target versions: v0.5.0, v0.5.1
+
+🎯 What to complete
+Backend
+
+User entity (username, password, role)
+
+AuthController:
+
+POST /api/auth/login
+
+JWT:
+
+JwtUtil
+
+JwtFilter
+
+SecurityConfig
+
+Protect APIs:
+
+/api/medicines → STAFF/ADMIN
+
+/api/admin/** → ADMIN only
+
+Frontend
+
+/login page
+
+Auth context:
+
+Store JWT
+
+Store role
+
+Protected routes:
+
+If not logged in → redirect to /login
+
+Hide admin pages from staff UI
+
+Docs
+
+architecture.md: add security layer
+
+api-spec.md: include auth APIs
+
+changelog.md: v0.5.x
+
+✅ Version tags
+git tag v0.5.0 -m "v0.5.0 - JWT auth and role-based access"
+git push origin v0.5.0
+
+🟪 Phase 6 – Reports + Returns + Polish
+
+Goal: Make app useful for decision-making and daily usage.
+
+Target versions: v0.6.0, v0.6.1
+
+🎯 What to complete
+Backend
+
+Report APIs:
+
+/api/reports/sales?from=&to=
+
+/api/reports/stock
+
+/api/reports/low-stock
+
+Order return:
+
+POST /api/orders/{id}/return
+
+Adjust stock
+
+Save reason
+
+Frontend
+
+/reports page:
+
+Sales table + filters (from/to date)
+
+Low stock list
+
+Return order UI:
+
+Select order
+
+Enter reason
+
+Perform return
+
+Docs
+
+requirements.md: mark features as done
+
+changelog.md: v0.6.x
+
+✅ Version tags
+git tag v0.6.0 -m "v0.6.0 - Reports and returns implemented"
+git push origin v0.6.0
+
+🟦 Phase 7 – Cloud Deployment (Full Cloud-Based App)
+
+Goal: Entire app deployed online (backend + DB + frontend).
+
+Target version: v1.0.0
+
+🎯 What to complete
+Backend
+
+Deploy to:
+
+Render / Railway / any cloud
+
+Use env variables:
+
+DB URL, username, password
+
+JWT secret
+
+CORS config for frontend domain
+
+Database
+
+Hosted MySQL/PostgreSQL:
+
+Railway / PlanetScale / Render DB etc.
+
+Frontend
+
+Build React: npm run build
+
+Deploy:
+
+Vercel or Netlify
+
+Set REACT_APP_API_BASE_URL to backend URL
+
+Docs
+
+deployment.md: full cloud deployment steps
+
+README.md: update with live demo link
+
+changelog.md: add v1.0.0
+
+✅ Version tag
+git tag v1.0.0 -m "v1.0.0 - Cloud deployment for medical store app"
+git push origin v1.0.0
