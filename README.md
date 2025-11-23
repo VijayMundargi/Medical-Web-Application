@@ -110,3 +110,13 @@ services:
 
 volumes:
   mysql_data:
+
+---
+### To start Docker 
+- docker-compose up -d
+
+### docker exec -it medical_store_mysql mysql -u root -p
+# password: root
+
+
+
