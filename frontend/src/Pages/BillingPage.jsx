@@ -4,7 +4,6 @@ import { useCustomerContext } from "@/context/CustomerContext";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useOrderContext } from "@/context/OrderContext";
 
 const BillingPage = () => {
   const { products } = useProducts();
@@ -14,6 +13,11 @@ const BillingPage = () => {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [paymentMode, setPaymentMode] = useState("cash");
+  const [search, setSearch] = useState("");
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -50,12 +54,9 @@ const BillingPage = () => {
       return;
     }
 
-    // 🔥 Store purchase + auto-create customer if needed
     addPurchase(customerPhone, totalAmount, paymentMode, customerName);
 
-    // 🧾 Generate Invoice Window
     const billWindow = window.open("", "Print Bill", "width=600,height=800");
-
     billWindow.document.write(`
       <html>
       <head>
@@ -63,29 +64,29 @@ const BillingPage = () => {
         <style>
           body { font-family: Arial; padding: 20px; }
           table { width: 100%; border-collapse: collapse; }
-          th, td { border: 1px solid black; padding: 8px; }
+          th, td { border: 1px solid #ccc; padding: 8px; }
         </style>
       </head>
       <body>
-        <h2>Medical Store</h2>
+        <h2>Medical Store - Invoice</h2>
         <p><strong>Customer:</strong> ${customerName}</p>
         <p><strong>Phone:</strong> ${customerPhone}</p>
-        <p><strong>Payment Mode:</strong> ${paymentMode}</p>
+        <p><strong>Payment:</strong> ${paymentMode}</p>
 
         <table>
           <thead>
-            <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+            <tr><th>Medicine</th><th>Qty</th><th>Price</th><th>Total</th></tr>
           </thead>
           <tbody>
             ${cart
               .map(
-                (i) =>
-                  `<tr>
-                    <td>${i.name}</td>
-                    <td>${i.quantity}</td>
-                    <td>₹${i.price}</td>
-                    <td>₹${i.price * i.quantity}</td>
-                  </tr>`
+                (i) => `
+              <tr>
+                <td>${i.name}</td>
+                <td>${i.quantity}</td>
+                <td>₹${i.price}</td>
+                <td>₹${i.price * i.quantity}</td>
+              </tr>`
               )
               .join("")}
           </tbody>
@@ -99,107 +100,147 @@ const BillingPage = () => {
     billWindow.document.close();
     billWindow.print();
 
-    // Reset cart
     setCart([]);
   };
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Billing / Sales</h1>
 
-      {/* Customer Info */}
-      <Card className="max-w-md">
-        <CardHeader>
-          <CardTitle>Customer Information</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Input
-            placeholder="Customer Name"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-          />
-          <Input
-            placeholder="Phone Number"
-            value={customerPhone}
-            onChange={(e) => setCustomerPhone(e.target.value)}
-          />
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Billing / POS</h1>
 
-          <select
-            className="border p-2 rounded"
-            value={paymentMode}
-            onChange={(e) => setPaymentMode(e.target.value)}
-          >
-            <option value="cash">Cash</option>
-            <option value="upi">UPI</option>
-            <option value="bank">Bank Transfer</option>
-          </select>
-        </CardContent>
-      </Card>
-
-      {/* Products */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {products.map((p) => (
-          <Card key={p.id} className="cursor-pointer shadow">
-            <CardHeader>
-              <CardTitle>{p.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Price: ₹{p.price}</p>
-              <p>Stock: {p.stock}</p>
-              <Button
-                onClick={() => addToCart(p)}
-                disabled={p.stock <= 0}
-                className="mt-2"
-              >
-                Add to Bill
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+        <Input
+          placeholder="Search Medicines..."
+          className="w-1/3"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {/* Bill */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Bill</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {cart.length === 0 ? (
-            <p>No items added</p>
-          ) : (
-            <>
-              {cart.map((i) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Left Section - Customer + Products */}
+        <div className="col-span-2 space-y-6">
+
+          {/* Customer Info */}
+          <Card className="shadow-md rounded-xl">
+            <CardHeader>
+              <CardTitle className="text-xl">Customer Information</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                placeholder="Customer Name"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
+              <Input
+                placeholder="Phone Number"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+              />
+
+              <select
+                className="border p-2 rounded col-span-2"
+                value={paymentMode}
+                onChange={(e) => setPaymentMode(e.target.value)}
+              >
+                <option value="cash">Cash</option>
+                <option value="upi">UPI</option>
+                <option value="bank">Bank Transfer</option>
+              </select>
+            </CardContent>
+          </Card>
+
+          {/* Product List */}
+          <Card className="rounded-xl shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl">Available Medicines</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+              {filteredProducts.map((p) => (
                 <div
-                  key={i.id}
-                  className="flex justify-between border-b py-2 items-center"
+                  key={p.id}
+                  className="border rounded-lg p-3 shadow-sm hover:shadow-md transition cursor-pointer"
                 >
-                  <p>{i.name}</p>
-                  <Input
-                    type="number"
-                    className="w-20"
-                    value={i.quantity}
-                    onChange={(e) =>
-                      updateQuantity(i.id, +e.target.value || 1)
-                    }
-                  />
-                  <Button
-                    variant="destructive"
-                    onClick={() => removeFromCart(i.id)}
+                  <h3 className="font-semibold text-lg">{p.name}</h3>
+                  <p className="text-sm text-gray-600">Price: ₹{p.price}</p>
+
+                  <p
+                    className={`mt-1 font-semibold ${
+                      p.stock <= 10 ? "text-red-600" : "text-green-600"
+                    }`}
                   >
-                    Remove
+                    Stock: {p.stock}
+                  </p>
+
+                  <Button
+                    onClick={() => addToCart(p)}
+                    disabled={p.stock <= 0}
+                    className="mt-3 w-full"
+                  >
+                    Add to Bill
                   </Button>
                 </div>
               ))}
-              <h2 className="text-xl font-bold mt-4">
-                Total: ₹{totalAmount}
-              </h2>
-              <Button className="mt-4" onClick={generateBill}>
-                Generate Bill
-              </Button>
-            </>
-          )}
-        </CardContent>
-      </Card>
+
+            </CardContent>
+          </Card>
+
+        </div>
+
+        {/* Right Section – Bill */}
+        <Card className="shadow-md rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-xl">Bill Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {cart.length === 0 ? (
+              <p className="text-gray-500 text-center py-6">No items added</p>
+            ) : (
+              <>
+                {cart.map((i) => (
+                  <div
+                    key={i.id}
+                    className="flex justify-between items-center border-b py-3"
+                  >
+                    <div>
+                      <p className="font-semibold">{i.name}</p>
+                      <p className="text-sm text-gray-500">
+                        ₹{i.price} × {i.quantity}
+                      </p>
+                    </div>
+
+                    <Input
+                      type="number"
+                      className="w-20"
+                      value={i.quantity}
+                      onChange={(e) =>
+                        updateQuantity(i.id, +e.target.value || 1)
+                      }
+                    />
+
+                    <Button
+                      variant="destructive"
+                      onClick={() => removeFromCart(i.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+
+                <h2 className="text-2xl font-bold text-right mt-6">
+                  Total: ₹{totalAmount}
+                </h2>
+
+                <Button className="mt-4 w-full" onClick={generateBill}>
+                  Generate Bill
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

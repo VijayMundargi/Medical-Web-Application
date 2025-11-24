@@ -1,43 +1,45 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
-const ShiftInfoCard = ({ name, email, role, shift, status }) => (
-  <Card className="rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 relative">
-    <CardHeader>
-      <CardTitle className="text-xl font-semibold text-gray-800">
-        👨‍💼 Staff Information
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-3">
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 font-medium">Name</span>
-        <span className="text-gray-800 font-semibold">{name}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 font-medium">Email</span>
-        <span className="text-gray-800 font-semibold">{email}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 font-medium">Role</span>
-        <span className="text-gray-800 font-semibold">{role}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 font-medium">Shift</span>
-        <span className="text-gray-800 font-semibold">{shift}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-gray-600 font-medium">Status</span>
-        <span
-          className={`px-3 py-1 text-sm rounded-full font-semibold ${
-            status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {status}
-        </span>
-      </div>
-    </CardContent>
-  </Card>
-);
+const ShiftInfoCard = ({ name, email, role, shift, status }) => {
+  return (
+    <Card className="rounded-2xl shadow-md border border-gray-200">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold text-gray-800">
+          👨‍💼 Staff Information
+        </CardTitle>
+      </CardHeader>
 
-export default ShiftInfoCard;
+      <CardContent className="space-y-3">
+        <Info label="Name" value={name} />
+        <Info label="Email" value={email} />
+        <Info label="Role" value={role} />
+        <Info label="Shift" value={shift} />
+        <StatusBadge status={status} />
+      </CardContent>
+    </Card>
+  )
+}
+
+const Info = ({ label, value }) => (
+  <div className="flex justify-between">
+    <span className="text-gray-600">{label}</span>
+    <span className="font-semibold text-gray-800">{value}</span>
+  </div>
+)
+
+const StatusBadge = ({ status }) => (
+  <div className="flex justify-between">
+    <span className="text-gray-600">Status</span>
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-semibold ${
+        status === "Active"
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700"
+      }`}
+    >
+      {status}
+    </span>
+  </div>
+)
+
+export default ShiftInfoCard

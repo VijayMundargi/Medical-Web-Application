@@ -6,7 +6,7 @@ import ReportsSection from "@/components/dashboard/ReportsSection"
 
 const Dashboard = () => {
   const [data, setData] = useState(null)
-  const [reportType, setReportType] = useState("daily") // daily, weekly, monthly, custom
+  const [reportType, setReportType] = useState("daily")
   const [customDate, setCustomDate] = useState({ start: "", end: "" })
 
   useEffect(() => {
@@ -32,7 +32,9 @@ const Dashboard = () => {
               key={type}
               onClick={() => setReportType(type)}
               className={`px-4 py-2 rounded ${
-                reportType === type ? "bg-teal-600 text-white" : "bg-gray-100"
+                reportType === type
+                  ? "bg-teal-600 text-white"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -75,19 +77,29 @@ const Dashboard = () => {
 
 export default Dashboard
 
+/* ===========================================================
+      🔽🔽🔽 DYNAMIC DATA GENERATION (Paste Below) 🔽🔽🔽
+   =========================================================== */
 
 const categories = ["Painkillers", "Antibiotics", "Vitamins", "Supplements"]
 const medicines = ["Paracetamol", "Amoxicillin", "Vitamin C", "Insulin", "Metformin"]
+const expiryDates = ["2025-01-10", "2025-02-15", "2025-03-05", "2024-12-29", "2025-01-25"]
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-async function getReportData(type, customDate) {
-  // Simulate API delay
-  await new Promise((res) => setTimeout(res, 300))
+function isExpiringSoon(date) {
+  const today = new Date()
+  const exp = new Date(date)
+  const diff = (exp - today) / (1000 * 60 * 60 * 24)
+  return diff <= 30 // Expiring within 30 days
+}
 
-  // Generate dynamic stats
+async function getReportData(type, customDate) {
+  await new Promise((res) => setTimeout(res, 300)) // Fake API delay
+
+  // Stats
   const stats = [
     { label: "Total Medicines Sold", value: getRandomInt(100, 500) },
     { label: "Out of Stock", value: getRandomInt(5, 50) },
@@ -95,36 +107,54 @@ async function getReportData(type, customDate) {
     { label: "Active Prescriptions", value: getRandomInt(20, 150) },
   ]
 
-  // Generate dynamic charts
-  const salesTrend = Array.from({ length: type === "daily" ? 6 : 7 }, (_, i) => ({
+  // Sales Trend Chart
+  const salesTrend = Array.from({ length: 7 }, (_, i) => ({
     date: type === "daily" ? `${8 + i} AM` : `Day ${i + 1}`,
     sales: getRandomInt(50, 300),
   }))
 
+  // Stock Pie Chart
   const stockDistribution = categories.map((cat) => ({
     category: cat,
     value: getRandomInt(20, 100),
   }))
 
+  // Prescription Status Chart
   const prescriptionStatus = [
     { status: "Pending", value: getRandomInt(10, 50) },
     { status: "Completed", value: getRandomInt(50, 150) },
   ]
 
-  // Generate dynamic reports
-  const topSellingMedicines = medicines.map((med) => ({
-    name: med,
-    sold: getRandomInt(50, 150),
-  }))
+  // Medicines (Stock, Expiry, Sold)
+  const topSellingMedicines = medicines.map((med, index) => {
+    const stock = getRandomInt(1, 80)
+    const expiry = expiryDates[index]
 
-  const lowStockMedicines = medicines.map((med) => ({
-    name: med,
-    stock: getRandomInt(1, 10),
-  }))
+    return {
+      name: med,
+      sold: getRandomInt(50, 150),
+
+      // stock status
+      stock,
+      stockStatus: stock < 10 ? "low" : "good",
+
+      // expiry
+      expiry,
+      isExpiring: isExpiringSoon(expiry),
+    }
+  })
 
   return {
     stats,
-    charts: { salesTrend, stockDistribution, prescriptionStatus },
-    reports: { topSellingMedicines, lowStockMedicines },
+    charts: {
+      salesTrend,
+      stockDistribution,
+      prescriptionStatus,
+    },
+    reports: {
+      topSellingMedicines,
+      lowStockMedicines: topSellingMedicines.filter((m) => m.stock < 10),
+      expiringMedicines: topSellingMedicines.filter((m) => m.isExpiring),
+    },
   }
 }
